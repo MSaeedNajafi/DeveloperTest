@@ -1,13 +1,12 @@
 import React, {useState, useEffect} from 'react';
 import Paper from '@material-ui/core/Paper';
 import Grid from '@material-ui/core/Grid';
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles, Theme, createStyles } from '@material-ui/core/styles';
 import Accordion from '@material-ui/core/Accordion';
 import AccordionDetails from '@material-ui/core/AccordionDetails';
 import AccordionSummary from '@material-ui/core/AccordionSummary';
 import Typography from '@material-ui/core/Typography';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-
 
 interface IDelivery{
   end: Date;
@@ -51,8 +50,8 @@ interface ITransport {
 }
 
 function App() {
-  const [error, setError] = useState(null);
-  const [isLoaded, setIsLoaded] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [isLoaded, setIsLoaded] = useState<boolean>(false);
   const [items, setItems] = useState<ITransport[]>([]);
 
   const classes = useStyles();
@@ -74,41 +73,50 @@ function App() {
 
 
   if (error) {
-    return <div className={classes.root}>Error: {error}</div>;
+    return <div className={classes.root}>Error: {error.toString()}</div>;
   } else if (!isLoaded) {
     return <div className={classes.root}>Loading...</div>;
   } else {
     return (
-        <Grid container >
+        <Grid container style={{padding: 20}} >
           {items.map(item => (
             <Grid item xs={12} key={item.id}>
-              <Accordion>
+              <Accordion style={{borderRadius: 0, backgroundColor: "#3b82f6",  }}>
                 <AccordionSummary
-                expandIcon={<ExpandMoreIcon />}
+                expandIcon={<ExpandMoreIcon style={{color: 'white'}} />}
                 aria-controls="Transport-content"
                 id="Transport-header">
                   <Typography className={classes.heading}>Transport <span style={{fontWeight: 'bold'}}>{item.id}</span></Typography>
-                  <Typography className={classes.secondaryHeading}>{item.delivery_address.locality} to {item.pickup_address.locality}</Typography>
+                  <Typography className={classes.secondaryHeading}>{item.pickup_address.locality} to {item.delivery_address.locality}</Typography>
                   <Typography className={classes.thirdHeading}>({item.reward.amount} {item.reward.currency})</Typography>
                 </AccordionSummary>
                 <AccordionDetails>
-                  <Grid item xs={6}>
-                    <Paper className={classes.paper}>
-                      <div style={{padding: 5}} >
-                        <p>delivery location</p>
-                        <p>{item.delivery_address.line_1}, {item.delivery_address.postal_code}, {item.delivery_address.locality}</p>
-                        <p>{item.delivery_address.administrative_area}, {item.delivery_address.country_code}</p>
+                <Grid container >
+                  
+                  <Grid item xs={12} md={6} className={classes.transform}>  
+                    <Paper className={classes.paper} elevation={3}>
+                      <div style={{ padding: 25}} >
+                        <p>pickup location</p>
+                        <p>{item.pickup_address.line_1}, {item.pickup_address.postal_code}, {item.pickup_address.locality}</p>
+                        <p>{item.pickup_address.administrative_area}, {item.pickup_address.country_code}</p>
+                        <p>pickup date</p>
+                        <p>start date: {item.pickup.start}</p>
+                        <p>end date: {item.pickup.end}</p>                     
                       </div>
                     </Paper>
                   </Grid>
-                  <Grid item xs={6}>
-                    <Paper className={classes.paper}>
-                      <div style={{ padding: 5}} >
-                       <p>pickup location</p>
-                       <p>{item.pickup_address.line_1}, {item.pickup_address.postal_code}, {item.pickup_address.locality}</p>
-                       <p>{item.pickup_address.administrative_area}, {item.pickup_address.country_code}</p>
-                     </div>
+                  <Grid item xs={12} md={6} className={classes.transform}>
+                    <Paper className={classes.paper} elevation={3}>
+                      <div style={{padding: 25}} >
+                        <p>delivery location</p>
+                        <p>{item.delivery_address.line_1}, {item.delivery_address.postal_code}, {item.delivery_address.locality}</p>
+                        <p>{item.delivery_address.administrative_area}, {item.delivery_address.country_code}</p>
+                        <p>delivery date</p>
+                        <p>start date: {item.delivery.start}</p>
+                        <p>end date: {item.delivery.end}</p>                      
+                      </div>
                     </Paper>
+                  </Grid>
                   </Grid>
                 </AccordionDetails>
               </Accordion>
@@ -120,32 +128,44 @@ function App() {
 
 }
 
-const useStyles = makeStyles((theme) => ({
-  paper: {
-    // padding: 5,
-    // textAlign: 'center',
-    color: theme.palette.text.secondary,
-    width: '100%',
-  },
-  root: {
-    width: '100%',
-  },
-  heading: {
-    fontSize: theme.typography.pxToRem(15),
-    flexBasis: '33.33%',
-    flexShrink: 0,
-  },
-  secondaryHeading: {
-    fontSize: theme.typography.pxToRem(15),
-    color: theme.palette.text.secondary,
-    flexBasis: '50%',
-    flexShrink: 0,
-  },  
-  thirdHeading: {
-    fontSize: theme.typography.pxToRem(15),
-    color: theme.palette.text.primary,
-    paddingLeft: 10
-  },
-}));
+const useStyles = makeStyles((theme: Theme) =>
+  createStyles({
+    paper: {
+      // padding: 5,
+      // textAlign: 'center',
+      color: 'black',
+      width: '99%',
+      borderRadius: 0,
+      backgroundColor: 'aliceblue'
+    },
+    root: {
+      width: '100%',
+    },
+    heading: {
+      fontSize: theme.typography.pxToRem(15),
+      flexBasis: '33.33%',
+      flexShrink: 0,
+      color: 'white',
+    },
+    secondaryHeading: {
+      fontSize: theme.typography.pxToRem(15),
+      color: 'black',
+      // flexBasis: '50%',
+      // flexShrink: 0,
+    },  
+    thirdHeading: {
+      fontSize: theme.typography.pxToRem(15),
+      color: theme.palette.text.primary,
+      paddingLeft: 10
+    },
+    transform:{
+      "&:hover":{
+        transform: "scale(1.02)",
+        transition: "all 0.2s ease-in-out",
+      }
+      
+    }
+  }),
+);
 
 export default App;
