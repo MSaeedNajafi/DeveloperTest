@@ -95,7 +95,7 @@ function App() {
               >
                 <Typography className={classes.heading}>
                   Transport
-                  <span style={{ fontWeight: "bold" }}>{item.id}</span>
+                  <span style={{ fontWeight: "bold" }}>{" "}{item.id}</span>
                 </Typography>
                 <Typography className={classes.secondaryHeading}>
                   {item.pickup_address.locality} to{" "}
