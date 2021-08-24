@@ -15,7 +15,6 @@ import FormControl from "@material-ui/core/FormControl";
 import SettingsIcon from "@material-ui/icons/Settings";
 import TextField from "@material-ui/core/TextField";
 import Geocode from "react-geocode";
-import Button from "@material-ui/core/Button";
 import { GoogleMap, LoadScript } from "@react-google-maps/api";
 
 Geocode.setLanguage("en");
@@ -148,8 +147,6 @@ function App() {
   useEffect(() => {
   }, [cordinatesDel,cordinates]);
 
-
-  let index:number = 0;
 
   if (error) {
     return <div className={classes.root}>Error: {error.toString()}</div>;
@@ -317,14 +314,10 @@ function App() {
                               width: "100%",
                               height: "100%",
                             }}
-                            // cordinates[index].
                             center={{ lat: cordinates.length === 0 ? 0 : cordinates[index].lat, lng: cordinates.length === 0 ? 0 : cordinates[index].lng }}
-                            // center={{ lat: lat, lng: lng }}
-                            zoom={10}
+                            zoom={15}
                           ></GoogleMap>
                         </LoadScript>
-
-                        {/* {console.log(cordinates)} */}
                       </Grid>
                     </Grid>
                   </Grid>
@@ -419,13 +412,10 @@ function App() {
                               width: "100%",
                               height: "100%",
                             }}
-                            // cordinates[index].
                             center={{ lat: cordinatesDel.length === 0 ? 0 : cordinatesDel[index].lat, lng: cordinatesDel.length === 0 ? 0 : cordinatesDel[index].lng }}
-                            // center={{ lat: lat, lng: lng }}
-                            zoom={10}
+                            zoom={15}
                           ></GoogleMap>
                         </LoadScript>
-
                       </Grid>
                     </Grid>
                   </Grid>
