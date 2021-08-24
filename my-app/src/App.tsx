@@ -10,6 +10,7 @@ import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import Input from "@material-ui/core/Input";
 import InputLabel from "@material-ui/core/InputLabel";
 import InputAdornment from "@material-ui/core/InputAdornment";
+import EuroIcon from "@material-ui/icons/Euro";
 import FormControl from "@material-ui/core/FormControl";
 import SettingsIcon from "@material-ui/icons/Settings";
 import TextField from "@material-ui/core/TextField";
@@ -97,16 +98,21 @@ function App() {
                   <span style={{ fontWeight: "bold" }}>{item.id}</span>
                 </Typography>
                 <Typography className={classes.secondaryHeading}>
-                  {item.pickup_address.locality} to
+                  {item.pickup_address.locality} to{" "}
                   {item.delivery_address.locality}
                 </Typography>
-                <Typography className={classes.thirdHeading}>
-                  ({item.reward.amount} {item.reward.currency})
-                </Typography>
+                {/* <Typography className={classes.thirdHeading}>
+                  ({item.reward.amount.toFixed(2)} {item.reward.currency})
+                </Typography> */}
               </AccordionSummary>
               <AccordionDetails>
                 <Grid container>
-                  <Grid item xs={12} className={classes.maxV}>
+                  <Grid
+                    item
+                    xs={6}
+                    style={{ marginBottom: 5 }}
+                    className={classes.transform}
+                  >
                     <Paper className={classes.paper} elevation={3}>
                       <FormControl className={classes.margin} disabled>
                         <InputLabel htmlFor="input-with-icon-adornment">
@@ -124,10 +130,33 @@ function App() {
                       </FormControl>
                     </Paper>
                   </Grid>
+                  <Grid
+                    item
+                    xs={6}
+                    style={{ marginBottom: 5 }}
+                    className={classes.transform}
+                  >
+                    <Paper className={classes.paper} elevation={3}>
+                      <FormControl className={classes.margin} disabled>
+                        <InputLabel htmlFor="input-with-icon-adornment">
+                          Reward
+                        </InputLabel>
+                        <Input
+                          value={item.reward.amount.toFixed(2)}
+                          id="input-with-icon-adornment"
+                          startAdornment={
+                            <InputAdornment position="start">
+                              <EuroIcon />
+                            </InputAdornment>
+                          }
+                        />
+                      </FormControl>
+                    </Paper>
+                  </Grid>
                   <Grid item xs={12} md={6} className={classes.transform}>
                     <Grid
                       container
-                      style={{ backgroundColor: "aliceblue", width: "99%" }}
+                      style={{ backgroundColor: "aliceblue", width: "99.5%" }}
                     >
                       <Grid item xs={12} md={6} style={{ padding: 15 }}>
                         <Typography
@@ -214,7 +243,7 @@ function App() {
                   <Grid item xs={12} md={6} className={classes.transform}>
                     <Grid
                       container
-                      style={{ backgroundColor: "aliceblue", width: "99%" }}
+                      style={{ backgroundColor: "aliceblue", width: "99.5%" }}
                     >
                       <Grid item xs={12} md={6} style={{ padding: 15 }}>
                         <Typography
@@ -343,10 +372,6 @@ const useStyles = makeStyles((theme: Theme) =>
         transform: "scale(1.02)",
         transition: "all 0.2s ease-in-out",
       },
-    },
-    maxV: {
-      marginBottom: 10,
-      // width: '100%',
     },
     margin: {
       margin: theme.spacing(1),
