@@ -14,6 +14,13 @@ import EuroIcon from "@material-ui/icons/Euro";
 import FormControl from "@material-ui/core/FormControl";
 import SettingsIcon from "@material-ui/icons/Settings";
 import TextField from "@material-ui/core/TextField";
+import Geocode from "react-geocode";
+import Button from "@material-ui/core/Button";
+import { GoogleMap, LoadScript } from "@react-google-maps/api";
+
+Geocode.setLanguage("en");
+Geocode.setApiKey("AIzaSyB26A_1y8xU5rltpxP1CfE1PwqiA5W3YDs");
+
 interface IDelivery {
   end: Date;
   start: Date;
@@ -55,21 +62,81 @@ interface ITransport {
   reward: IReward;
 }
 
+interface ICoordinates {
+  lat: number;
+  lng: number;
+}
+
 function App() {
   const [error, setError] = useState<string | null>(null);
   const [isLoaded, setIsLoaded] = useState<boolean>(false);
   const [items, setItems] = useState<ITransport[]>([]);
+  const [lat, setLat] = useState<string>("");
+  const [lng, setLng] = useState<string>("");
+  const [cordinates, setCordinates] = useState<ICoordinates[]>([]);
+  const [cordinatesDel, setCordinatesDel] = useState<ICoordinates[]>([]);
   const classes = useStyles();
-
   useEffect(() => {
     fetch(
       "https://brenger-interviews.s3.amazonaws.com/open_transport_jobs.json"
     )
       .then((res) => res.json())
       .then(
-        (result) => {
+        async (result) => {
           setIsLoaded(true);
           setItems(result);
+          let adr;
+          let postcode;
+          let local;
+          let cords: ICoordinates[] = [];
+
+          let adr_del;
+          let postcode_del;
+          let local_del;
+          let cords_del: ICoordinates[] = [];
+
+          for (let i = 0; i < result.length; i++) {
+            // setIsLoaded(true);
+            adr = result[i].pickup_address.line_1;
+            postcode = result[i].pickup_address.postal_code;
+            local = result[i].pickup_address.locality;
+
+            var address = adr + " " + postcode + " " + local;
+            await Geocode.fromAddress(address).then(
+              (response) => { 
+                let lat = response.results[0].geometry.location.lat;
+                let lng = response.results[0].geometry.location.lng;
+                let cord = { lat, lng };
+                cords.push(cord);
+                return cords;
+              },
+              (error) => {
+                console.error(error);
+              }
+            );
+          }
+          for (let i = 0; i < result.length; i++) {
+            // setIsLoaded(true);
+            adr_del = result[i].delivery_address.line_1;
+            postcode_del = result[i].delivery_address.postal_code;
+            local_del = result[i].delivery_address.locality;
+
+            var address = adr_del + " " + postcode_del + " " + local_del;
+            await Geocode.fromAddress(address).then(
+              (response) => { 
+                let lat = response.results[0].geometry.location.lat;
+                let lng = response.results[0].geometry.location.lng;
+                let cord = { lat, lng };
+                cords_del.push(cord);
+                return cords_del;
+              },
+              (error) => {
+                console.error(error);
+              }
+            );
+          }
+          setCordinates(cords);
+          setCordinatesDel(cords_del)
         },
         (error) => {
           setIsLoaded(true);
@@ -78,6 +145,12 @@ function App() {
       );
   }, []);
 
+  useEffect(() => {
+  }, [cordinatesDel,cordinates]);
+
+
+  let index:number = 0;
+
   if (error) {
     return <div className={classes.root}>Error: {error.toString()}</div>;
   } else if (!isLoaded) {
@@ -85,7 +158,7 @@ function App() {
   } else {
     return (
       <Grid container style={{ padding: 20 }}>
-        {items.map((item) => (
+        {items.map((item, index) => (
           <Grid item xs={12} key={item.id}>
             <Accordion style={{ borderRadius: 0, backgroundColor: "#3b82f6" }}>
               <AccordionSummary
@@ -95,7 +168,7 @@ function App() {
               >
                 <Typography className={classes.heading}>
                   Transport
-                  <span style={{ fontWeight: "bold" }}>{" "}{item.id}</span>
+                  <span style={{ fontWeight: "bold" }}> {item.id}</span>
                 </Typography>
                 <Typography className={classes.secondaryHeading}>
                   {item.pickup_address.locality} to{" "}
@@ -237,7 +310,22 @@ function App() {
                         xs={12}
                         md={6}
                         style={{ backgroundColor: "blue" }}
-                      ></Grid>
+                      >
+                        <LoadScript googleMapsApiKey="AIzaSyB26A_1y8xU5rltpxP1CfE1PwqiA5W3YDs">
+                          <GoogleMap
+                            mapContainerStyle={{
+                              width: "100%",
+                              height: "100%",
+                            }}
+                            // cordinates[index].
+                            center={{ lat: cordinates.length === 0 ? 0 : cordinates[index].lat, lng: cordinates.length === 0 ? 0 : cordinates[index].lng }}
+                            // center={{ lat: lat, lng: lng }}
+                            zoom={10}
+                          ></GoogleMap>
+                        </LoadScript>
+
+                        {/* {console.log(cordinates)} */}
+                      </Grid>
                     </Grid>
                   </Grid>
                   <Grid item xs={12} md={6} className={classes.transform}>
@@ -324,7 +412,21 @@ function App() {
                         xs={12}
                         md={6}
                         style={{ backgroundColor: "yellow" }}
-                      ></Grid>
+                      >
+                        <LoadScript googleMapsApiKey="AIzaSyB26A_1y8xU5rltpxP1CfE1PwqiA5W3YDs">
+                          <GoogleMap
+                            mapContainerStyle={{
+                              width: "100%",
+                              height: "100%",
+                            }}
+                            // cordinates[index].
+                            center={{ lat: cordinatesDel.length === 0 ? 0 : cordinatesDel[index].lat, lng: cordinatesDel.length === 0 ? 0 : cordinatesDel[index].lng }}
+                            // center={{ lat: lat, lng: lng }}
+                            zoom={10}
+                          ></GoogleMap>
+                        </LoadScript>
+
+                      </Grid>
                     </Grid>
                   </Grid>
                 </Grid>
