@@ -95,7 +95,6 @@ function App() {
           let cords_del: ICoordinates[] = [];
 
           for (let i = 0; i < result.length; i++) {
-            // setIsLoaded(true);
             adr = result[i].pickup_address.line_1;
             postcode = result[i].pickup_address.postal_code;
             local = result[i].pickup_address.locality;
@@ -115,7 +114,6 @@ function App() {
             );
           }
           for (let i = 0; i < result.length; i++) {
-            // setIsLoaded(true);
             adr_del = result[i].delivery_address.line_1;
             postcode_del = result[i].delivery_address.postal_code;
             local_del = result[i].delivery_address.locality;
@@ -146,7 +144,6 @@ function App() {
 
   useEffect(() => {
   }, [cordinatesDel,cordinates]);
-
 
   if (error) {
     return <div className={classes.root}>Error: {error.toString()}</div>;
