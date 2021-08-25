@@ -472,7 +472,7 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     secondaryHeading: {
       fontSize: theme.typography.pxToRem(15),
-      color: "black",
+      color: "white",
     },
     transform: {
       "&:hover": {
