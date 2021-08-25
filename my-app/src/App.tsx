@@ -187,6 +187,7 @@ function App() {
                         <Input
                           value={item.max_volume_m3}
                           id="input-with-icon-adornment"
+                          className={classes.topField}
                           startAdornment={
                             <InputAdornment position="start">
                               <SettingsIcon />
@@ -210,6 +211,7 @@ function App() {
                         <Input
                           value={item.reward.amount.toFixed(2)}
                           id="input-with-icon-adornment"
+                          className={classes.topField}
                           startAdornment={
                             <InputAdornment position="start">
                               <EuroIcon />
@@ -501,6 +503,9 @@ const useStyles = makeStyles((theme: Theme) =>
         // padding: 30
       },
     },
+    topField:{
+      width: "98%"
+    }
   })
 );
 
