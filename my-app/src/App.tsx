@@ -466,7 +466,7 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     heading: {
       fontSize: theme.typography.pxToRem(15),
-      flexBasis: "33.33%",
+      flexBasis: "45%",
       flexShrink: 0,
       color: "white",
     },
