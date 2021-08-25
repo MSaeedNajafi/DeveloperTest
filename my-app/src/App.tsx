@@ -15,7 +15,7 @@ import FormControl from "@material-ui/core/FormControl";
 import SettingsIcon from "@material-ui/icons/Settings";
 import TextField from "@material-ui/core/TextField";
 import Geocode from "react-geocode";
-import { GoogleMap, LoadScript } from "@react-google-maps/api";
+import { GoogleMap, LoadScript, Marker } from "@react-google-maps/api";
 
 Geocode.setLanguage("en");
 Geocode.setApiKey("AIzaSyB26A_1y8xU5rltpxP1CfE1PwqiA5W3YDs");
@@ -70,8 +70,6 @@ function App() {
   const [error, setError] = useState<string | null>(null);
   const [isLoaded, setIsLoaded] = useState<boolean>(false);
   const [items, setItems] = useState<ITransport[]>([]);
-  const [lat, setLat] = useState<string>("");
-  const [lng, setLng] = useState<string>("");
   const [cordinates, setCordinates] = useState<ICoordinates[]>([]);
   const [cordinatesDel, setCordinatesDel] = useState<ICoordinates[]>([]);
   const classes = useStyles();
@@ -101,7 +99,7 @@ function App() {
 
             var address = adr + " " + postcode + " " + local;
             await Geocode.fromAddress(address).then(
-              (response) => { 
+              (response) => {
                 let lat = response.results[0].geometry.location.lat;
                 let lng = response.results[0].geometry.location.lng;
                 let cord = { lat, lng };
@@ -118,9 +116,9 @@ function App() {
             postcode_del = result[i].delivery_address.postal_code;
             local_del = result[i].delivery_address.locality;
 
-            var address = adr_del + " " + postcode_del + " " + local_del;
-            await Geocode.fromAddress(address).then(
-              (response) => { 
+            var address_del = adr_del + " " + postcode_del + " " + local_del;
+            await Geocode.fromAddress(address_del).then(
+              (response) => {
                 let lat = response.results[0].geometry.location.lat;
                 let lng = response.results[0].geometry.location.lng;
                 let cord = { lat, lng };
@@ -133,7 +131,7 @@ function App() {
             );
           }
           setCordinates(cords);
-          setCordinatesDel(cords_del)
+          setCordinatesDel(cords_del);
         },
         (error) => {
           setIsLoaded(true);
@@ -142,8 +140,7 @@ function App() {
       );
   }, []);
 
-  useEffect(() => {
-  }, [cordinatesDel,cordinates]);
+  useEffect(() => {}, [cordinatesDel, cordinates]);
 
   if (error) {
     return <div className={classes.root}>Error: {error.toString()}</div>;
@@ -152,6 +149,11 @@ function App() {
   } else {
     return (
       <Grid container style={{ padding: 20 }}>
+        <Grid item xs={12}>
+          <Typography variant="h3" gutterBottom style={{ textAlign: "center" }}>
+            Transport Jobs
+          </Typography>
+        </Grid>
         {items.map((item, index) => (
           <Grid item xs={12} key={item.id}>
             <Accordion style={{ borderRadius: 0, backgroundColor: "#3b82f6" }}>
@@ -168,9 +170,6 @@ function App() {
                   {item.pickup_address.locality} to{" "}
                   {item.delivery_address.locality}
                 </Typography>
-                {/* <Typography className={classes.thirdHeading}>
-                  ({item.reward.amount.toFixed(2)} {item.reward.currency})
-                </Typography> */}
               </AccordionSummary>
               <AccordionDetails>
                 <Grid container>
@@ -221,10 +220,7 @@ function App() {
                     </Paper>
                   </Grid>
                   <Grid item xs={12} md={6} className={classes.transform}>
-                    <Grid
-                      container
-                      style={{ backgroundColor: "aliceblue", width: "99.5%" }}
-                    >
+                    <Grid container className={classes.containerClass}>
                       <Grid item xs={12} md={6} style={{ padding: 15 }}>
                         <Typography
                           variant="overline"
@@ -234,12 +230,11 @@ function App() {
                         >
                           pickup location
                         </Typography>
-                        <div style={{ border: "2px solid", padding: 10 }}>
+                        <div className={classes.divClass}>
                           <TextField
                             id="pickup_address.line_1"
                             label="Pickup Address"
                             value={item.pickup_address.line_1}
-                            style={{ width: "100%", marginBottom: 10 }}
                             className={classes.txtField}
                             disabled
                           />
@@ -247,7 +242,6 @@ function App() {
                             id="pickup_address.postal_code"
                             label="Postal Code"
                             value={item.pickup_address.postal_code}
-                            style={{ width: "100%", marginBottom: 10 }}
                             className={classes.txtField}
                             disabled
                           />
@@ -255,7 +249,6 @@ function App() {
                             id="pickup_address.locality"
                             label="Locality"
                             value={item.pickup_address.locality}
-                            style={{ width: "100%", marginBottom: 10 }}
                             className={classes.txtField}
                             disabled
                           />
@@ -267,7 +260,6 @@ function App() {
                               " - " +
                               item.pickup_address.country_code
                             }
-                            style={{ width: "100%", marginBottom: 10 }}
                             className={classes.txtField}
                             disabled
                           />
@@ -280,12 +272,11 @@ function App() {
                         >
                           pickup date
                         </Typography>
-                        <div style={{ border: "2px solid", padding: 10 }}>
+                        <div className={classes.divClass}>
                           <TextField
                             id="pickup.start"
                             label="Start Date"
                             value={item.pickup.start}
-                            style={{ width: "100%", marginBottom: 10 }}
                             className={classes.txtField}
                             disabled
                           />
@@ -293,36 +284,50 @@ function App() {
                             id="pickup.end"
                             label="End Date"
                             value={item.pickup.end}
-                            style={{ width: "100%", marginBottom: 10 }}
                             className={classes.txtField}
                             disabled
                           />
                         </div>
                       </Grid>
-                      <Grid
-                        item
-                        xs={12}
-                        md={6}
-                        style={{ backgroundColor: "blue" }}
-                      >
+                      <Grid item xs={12} md={6} className={classes.map}>
                         <LoadScript googleMapsApiKey="AIzaSyB26A_1y8xU5rltpxP1CfE1PwqiA5W3YDs">
                           <GoogleMap
                             mapContainerStyle={{
                               width: "100%",
                               height: "100%",
                             }}
-                            center={{ lat: cordinates.length === 0 ? 0 : cordinates[index].lat, lng: cordinates.length === 0 ? 0 : cordinates[index].lng }}
+                            center={{
+                              lat:
+                                cordinates.length === 0
+                                  ? 0
+                                  : cordinates[index].lat,
+                              lng:
+                                cordinates.length === 0
+                                  ? 0
+                                  : cordinates[index].lng,
+                            }}
                             zoom={15}
-                          ></GoogleMap>
+                          >
+                            <Marker
+                              key={item.id}
+                              position={{
+                                lat:
+                                  cordinates.length === 0
+                                    ? 0
+                                    : cordinates[index].lat,
+                                lng:
+                                  cordinates.length === 0
+                                    ? 0
+                                    : cordinates[index].lng,
+                              }}
+                            />
+                          </GoogleMap>
                         </LoadScript>
                       </Grid>
                     </Grid>
                   </Grid>
                   <Grid item xs={12} md={6} className={classes.transform}>
-                    <Grid
-                      container
-                      style={{ backgroundColor: "aliceblue", width: "99.5%" }}
-                    >
+                    <Grid container className={classes.containerClass}>
                       <Grid item xs={12} md={6} style={{ padding: 15 }}>
                         <Typography
                           variant="overline"
@@ -332,12 +337,11 @@ function App() {
                         >
                           delivery location
                         </Typography>
-                        <div style={{ border: "2px solid", padding: 10 }}>
+                        <div className={classes.divClass}>
                           <TextField
                             id="delivery_address.line_1"
                             label="Delivery Address"
                             value={item.delivery_address.line_1}
-                            style={{ width: "100%", marginBottom: 10 }}
                             className={classes.txtField}
                             disabled
                           />
@@ -345,7 +349,6 @@ function App() {
                             id="delivery_address.postal_code"
                             label="Postal Code"
                             value={item.delivery_address.postal_code}
-                            style={{ width: "100%", marginBottom: 10 }}
                             className={classes.txtField}
                             disabled
                           />
@@ -353,7 +356,6 @@ function App() {
                             id="delivery_address.locality"
                             label="Locality"
                             value={item.delivery_address.locality}
-                            style={{ width: "100%", marginBottom: 10 }}
                             className={classes.txtField}
                             disabled
                           />
@@ -365,7 +367,6 @@ function App() {
                               " - " +
                               item.delivery_address.country_code
                             }
-                            style={{ width: "100%", marginBottom: 10 }}
                             className={classes.txtField}
                             disabled
                           />
@@ -378,12 +379,11 @@ function App() {
                         >
                           delivery date
                         </Typography>
-                        <div style={{ border: "2px solid", padding: 10 }}>
+                        <div className={classes.divClass}>
                           <TextField
                             id="delivery.start"
                             label="Start Date"
                             value={item.delivery.start}
-                            style={{ width: "100%", marginBottom: 10 }}
                             className={classes.txtField}
                             disabled
                           />
@@ -391,27 +391,44 @@ function App() {
                             id="delivery.end"
                             label="End Date"
                             value={item.delivery.end}
-                            style={{ width: "100%", marginBottom: 10 }}
                             className={classes.txtField}
                             disabled
                           />
                         </div>
                       </Grid>
-                      <Grid
-                        item
-                        xs={12}
-                        md={6}
-                        style={{ backgroundColor: "yellow" }}
-                      >
+                      <Grid item xs={12} md={6} className={classes.map}>
                         <LoadScript googleMapsApiKey="AIzaSyB26A_1y8xU5rltpxP1CfE1PwqiA5W3YDs">
                           <GoogleMap
                             mapContainerStyle={{
                               width: "100%",
                               height: "100%",
                             }}
-                            center={{ lat: cordinatesDel.length === 0 ? 0 : cordinatesDel[index].lat, lng: cordinatesDel.length === 0 ? 0 : cordinatesDel[index].lng }}
+                            center={{
+                              lat:
+                                cordinatesDel.length === 0
+                                  ? 0
+                                  : cordinatesDel[index].lat,
+                              lng:
+                                cordinatesDel.length === 0
+                                  ? 0
+                                  : cordinatesDel[index].lng,
+                            }}
                             zoom={15}
-                          ></GoogleMap>
+                          >
+                            <Marker
+                              key={item.id}
+                              position={{
+                                lat:
+                                  cordinatesDel.length === 0
+                                    ? 0
+                                    : cordinatesDel[index].lat,
+                                lng:
+                                  cordinatesDel.length === 0
+                                    ? 0
+                                    : cordinatesDel[index].lng,
+                              }}
+                            />
+                          </GoogleMap>
                         </LoadScript>
                       </Grid>
                     </Grid>
@@ -428,6 +445,14 @@ function App() {
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
+    containerClass: {
+      backgroundColor: "aliceblue",
+      width: "99.5%",
+    },
+    divClass: {
+      border: "2px solid",
+      padding: 10,
+    },
     paper: {
       // padding: 5,
       // textAlign: 'center',
@@ -448,13 +473,6 @@ const useStyles = makeStyles((theme: Theme) =>
     secondaryHeading: {
       fontSize: theme.typography.pxToRem(15),
       color: "black",
-      // flexBasis: '50%',
-      // flexShrink: 0,
-    },
-    thirdHeading: {
-      fontSize: theme.typography.pxToRem(15),
-      color: theme.palette.text.primary,
-      paddingLeft: 10,
     },
     transform: {
       "&:hover": {
@@ -468,10 +486,19 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     txt: {
       textAlign: "center",
+      fontWeight: "bold",
     },
     txtField: {
+      width: "100%",
+      marginBottom: 10,
       "& .MuiInputBase-root.Mui-disabled": {
         color: "black",
+      },
+    },
+    map: {
+      "@media only screen and (max-width: 1000px)": {
+        height: 300,
+        // padding: 30
       },
     },
   })
